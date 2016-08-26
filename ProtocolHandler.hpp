@@ -47,10 +47,11 @@ std::string ProtocolHandler::run() {
 		case ProtocolMessage::keygen: {
 			setupParams();
 			auto params = _home+"/params";
-			auto armor = inst.generateKey(_msg.passphrase(), params);
-			
-			prepare(armor);
-			return "\n{\n\"private-key\":\"" + armor + "\"\n}\n";
+			auto priarmor = inst.generateKey(_msg.passphrase(), params);
+			auto pubarmor = inst.exportPublicKeyArmor(_msg.name());
+			prepare(priarmor);
+			prepare(pubarmor);
+			return "\n{\n\"private-key\":\"" + priarmor + "\",\n\"public-key\":\""+pubarmor+"\"\n}\n";
 		}
 		case ProtocolMessage::Import: {
 			auto key = inst.importPublicKey(_msg.publicKey());
