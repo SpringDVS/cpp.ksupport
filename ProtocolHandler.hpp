@@ -43,7 +43,10 @@ std::string ProtocolHandler::run() {
 							   				  _msg.privateKey(),
 											  _msg.passphrase());
 			prepare(armor);
-			return "\n{\n\"public-key\":\"" + armor + "\"\n}\n";
+			auto out = "\n{\n\"public-key\":\"" + armor + "\"\n}\n";
+			std::cout << "Response:\n" << out << "\n\n\n";
+			return out;
+
 		}
 		case ProtocolMessage::keygen: {
 		        std::cout << "Action: KEYGEN\n";
@@ -53,7 +56,9 @@ std::string ProtocolHandler::run() {
 			auto pubarmor = inst.exportPublicKeyArmor(_msg.name());
 			prepare(priarmor);
 			prepare(pubarmor);
-			return "\n{\n\"private-key\":\"" + priarmor + "\",\n\"public-key\":\""+pubarmor+"\"\n}\n";
+			auto out = "\n{\n\"private-key\":\"" + priarmor + "\",\n\"public-key\":\""+pubarmor+"\"\n}\n";
+			std::cout << "Response:\n" << out << "\n\n\n";
+			return out;
 		}
 		case ProtocolMessage::Import: {
 		        std::cout << "Action: IMPORT\n";
