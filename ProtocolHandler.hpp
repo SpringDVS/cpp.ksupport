@@ -38,6 +38,7 @@ std::string ProtocolHandler::run() {
 
 	switch(_msg.action()) {
 		case ProtocolMessage::Sign: {
+		        std::cout << "Action: SIGN\n";
 			auto armor = inst.signCertificate(_msg.publicKey(),
 							   				  _msg.privateKey(),
 											  _msg.passphrase());
@@ -45,6 +46,7 @@ std::string ProtocolHandler::run() {
 			return "\n{\n\"public-key\":\"" + armor + "\"\n}\n";
 		}
 		case ProtocolMessage::keygen: {
+		        std::cout << "Action: KEYGEN\n";
 			setupParams();
 			auto params = _home+"/params";
 			auto priarmor = inst.generateKey(_msg.passphrase(), params);
@@ -54,6 +56,7 @@ std::string ProtocolHandler::run() {
 			return "\n{\n\"private-key\":\"" + priarmor + "\",\n\"public-key\":\""+pubarmor+"\"\n}\n";
 		}
 		case ProtocolMessage::Import: {
+		        std::cout << "Action: IMPORT\n";
 			auto key = inst.importPublicKey(_msg.publicKey());
 			std::string out = "\n{\n";
 			out += "\"name\":\"" + key.name + "\",\n";
@@ -71,6 +74,8 @@ std::string ProtocolHandler::run() {
 			prepare(armor);
 			out += "\"armor\":\"" + armor + "\"\n";
 			out += "}\n";
+
+			std::cout << "Response:\n" << out << "\n\n\n";
 			return out;
 		}
 		default:

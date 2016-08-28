@@ -52,7 +52,7 @@ void TcpConnection::handleRead() {
                 if(!ec) {
                     auto s = std::string();
                     auto msg = HttpMessage(std::string(_data));
-                    
+		    std::cout << "Header:\n" << msg.headerText << "\n----------\n\n";
                     HttpContent content(std::string(_data), msg.headerSize);
                     
                     
@@ -69,7 +69,7 @@ void TcpConnection::handleRead() {
                         content.push(std::string(data));
                         delete data;
                     }
-                    
+		    std::cout << "Message:\n" << content.content << "\n----------\n\n";
                     ProtocolMessage pmsg(content.content);
                     ProtocolHandler handler(pmsg);
                     _message = handler.run();
