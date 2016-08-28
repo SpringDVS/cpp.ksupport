@@ -2,6 +2,7 @@
 #define GPGSERVER_HPP
 
 #include <boost/asio.hpp>
+
 #include "TcpConnection.hpp"
 
 using boost::asio::ip::tcp;

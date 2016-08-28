@@ -6,6 +6,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
+
 #define INPUT_MAX 4096
 
 using boost::asio::ip::tcp;

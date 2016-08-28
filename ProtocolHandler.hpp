@@ -2,6 +2,14 @@
 #define PROTOCOLHANDLER_HPP
 
 #include <fstream>
+#include <iomanip>
+
+#include <openssl/sha.h>
+
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
+#include "boost/filesystem.hpp"
+
 #include "ProtocolMessage.hpp"
 #include "GpgInst.hpp"
 
@@ -11,28 +19,41 @@ class ProtocolHandler {
 public:
 	
 	ProtocolHandler(ProtocolMessage msg);
+	~ProtocolHandler();
+	
 	std::string run();
 	void setupConf();
 	void setupParams();
 	
 	
 private:
-	
+	boost::random::mt19937 _prg;
 	ProtocolMessage _msg;
 	std::string _home;
 	const std::string _conf = "pinentry-program /usr/bin/pinentry-effdee";
 	
 	void prepare(std::string& str);
 	void formatReplace(std::string& str, std::string find, std::string replace);
+	void generateDirectory();
+	void cleanup();
 };
 
 ProtocolHandler::ProtocolHandler(ProtocolMessage msg)
 	: _msg(msg)
-{ }
+{ 
+    auto t1 = std::chrono::high_resolution_clock::now();    
+    _prg.seed(t1.time_since_epoch().count());
+}
+
+ProtocolHandler::~ProtocolHandler() {
+	cleanup();
+}
 
 
 std::string ProtocolHandler::run() {
-	_home = "/home/cfg/tmpkey";
+	
+	generateDirectory();
+	
 	setupConf();
 	GpgInst inst(_home);
 
@@ -127,6 +148,38 @@ void ProtocolHandler::formatReplace(std::string& str, std::string find, std::str
 	}
 	
 	
+}
+
+void ProtocolHandler::generateDirectory() {
+	
+	std::string root = "/home/cfg/tmpkey/";
+	auto t1 = std::chrono::high_resolution_clock::now();
+	auto rnd = _prg();
+	std::stringstream ss;
+	ss << t1.time_since_epoch().count() << rnd;
+	auto sha_seed = ss.str();
+	ss.str("");
+	
+	
+	
+	unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, sha_seed.c_str(), sha_seed.size());
+    SHA256_Final(hash, &sha256);
+    
+    for(int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+    {
+        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+    }
+    auto dir =  root + "/" + ss.str();
+
+	boost::filesystem::create_directories(dir.c_str());
+	_home = dir;
+}
+
+void ProtocolHandler::cleanup() {
+	boost::filesystem::remove_all(_home.c_str());
 }
 #endif /* PROTOCOLHANDLER_HPP */
 

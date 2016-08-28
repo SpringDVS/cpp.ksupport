@@ -11,19 +11,24 @@
  * Created on 25 August 2016, 10:10
  */
 
+#include <iostream>
+
+
+
+
 #include "TcpConnection.hpp"
 #include "HttpMessage.hpp"
 #include "HttpContent.hpp"
 #include "ProtocolMessage.hpp"
 #include "GpgInst.hpp"
 #include "ProtocolHandler.hpp"
-#include <iostream>
-
 
 
 TcpConnection::TcpConnection(boost::asio::io_service& ioserv)
     : _socket(ioserv)
-{ }
+{ 
+
+}
 
 
 TcpConnection::~TcpConnection() {
@@ -52,7 +57,7 @@ void TcpConnection::handleRead() {
                 if(!ec) {
                     auto s = std::string();
                     auto msg = HttpMessage(std::string(_data));
-		    std::cout << "Header:\n" << msg.headerText << "\n----------\n\n";
+		    std::cout << msg.headerText << "\n----------\n\n";
                     HttpContent content(std::string(_data), msg.headerSize);
                     
                     
@@ -69,7 +74,7 @@ void TcpConnection::handleRead() {
                         content.push(std::string(data));
                         delete data;
                     }
-		    std::cout << "Message:\n" << content.content << "\n----------\n\n";
+		    std::cout << content.content << "\n----------\n\n";
                     ProtocolMessage pmsg(content.content);
                     ProtocolHandler handler(pmsg);
                     _message = handler.run();
