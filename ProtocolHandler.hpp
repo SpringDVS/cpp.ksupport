@@ -64,7 +64,7 @@ std::string ProtocolHandler::run() {
 							   				  _msg.privateKey(),
 											  _msg.passphrase());
 			prepare(armor);
-			auto out = "\n{\n\"public-key\":\"" + armor + "\"\n}\n";
+			auto out = "\n{\n\"public\":\"" + armor + "\"\n}\n";
 			std::cout << "Response:\n" << out << "\n\n\n";
 			return out;
 
@@ -77,7 +77,7 @@ std::string ProtocolHandler::run() {
 			auto pubarmor = inst.exportPublicKeyArmor(_msg.name());
 			prepare(priarmor);
 			prepare(pubarmor);
-			auto out = "\n{\n\"private-key\":\"" + priarmor + "\",\n\"public-key\":\""+pubarmor+"\"\n}\n";
+			auto out = "\n{\n\"private\":\"" + priarmor + "\",\n\"public\":\""+pubarmor+"\"\n}\n";
 			std::cout << "Response:\n" << out << "\n\n\n";
 			return out;
 		}
