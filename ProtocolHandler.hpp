@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <string>
 
 #include <openssl/sha.h>
 
@@ -136,10 +137,22 @@ Expire-Date: 18m\n\
 void ProtocolHandler::prepare(std::string& str) {
 	formatReplace(str, "\\", "\\\\");
 	formatReplace(str, "\n", "\\n");
-	//formatReplace(str, "\"", "\\\"");
+	formatReplace(str, "\"", "\\\"");
 	formatReplace(str, "'", "\\'");
+	std::string blockend = "-----END PGP PUBLIC KEY BLOCK-----";
+	auto pos = str.find(blockend);
+	if( pos != std::string::npos) {
+		str = str.substr(0, pos + blockend.length());
+	}
+	
+	blockend = "-----END PGP PRIVATE KEY BLOCK-----";
+	pos = str.find(blockend);
+	if( pos != std::string::npos) {
+		str = str.substr(0, pos + blockend.length());
+	}
 	
 }
+
 void ProtocolHandler::formatReplace(std::string& str, std::string find, std::string replace) {
 	auto pos = -1;
 	
