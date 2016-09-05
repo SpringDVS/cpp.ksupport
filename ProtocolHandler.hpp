@@ -83,7 +83,12 @@ std::string ProtocolHandler::run() {
 			return out;
 		}
 		case ProtocolMessage::Import: {
-		        std::cout << "Action: IMPORT\n";
+		    std::cout << "Action: IMPORT\n";
+
+			if(!_msg.subjectKey().empty()) {
+				inst.importPublicKey(_msg.subjectKey());
+			}
+			
 			auto key = inst.importPublicKey(_msg.publicKey());
 			std::string out = "\n{\n";
 			out += "\"name\":\"" + key.name + "\",\n";

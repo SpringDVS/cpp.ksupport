@@ -15,16 +15,17 @@ public:
 	std::string& passphrase();
 	std::string& publicKey();
 	std::string& privateKey();
+	std::string& subjectKey();
 	std::string& name();
 	std::string& email();
 	
 private:
 	enum KeyType {
-		None, Public, Private,
+		None, Public, Private, Subject
 	};
 	Action _action;
 	std::string _passphrase;
-	std::string _public, _private;
+	std::string _public, _private, _subject;
 	
 	std::string _name, _email;
 
@@ -72,11 +73,18 @@ private:
 			continue;
 		}
 		
+		if(line == "SUBJECT {") {
+			type = KeyType::Subject;
+			continue;
+		}
+		
 		if(line == "}") {
 			if(type == KeyType::Private)
 				_private = key;
 			else if(type == KeyType::Public)
 				_public = key;
+			else if(type == KeyType::Subject)
+				_subject = key;
 			
 			key.clear();
 			type = KeyType::None;
@@ -112,6 +120,10 @@ std::string& ProtocolMessage::name() {
 
 std::string& ProtocolMessage::email() {
 	 return _email;
+}
+
+std::string& ProtocolMessage::subjectKey() {
+	return _subject;
 }
 #endif /* PROTOCOLMESSAGE_HPP */
 
