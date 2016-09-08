@@ -42,7 +42,7 @@ void GpgProc::openSocket() {
     std::cerr << "Failed to listen " << strerror(errno) << "\n";
     _sockfd = -1;
   }
-   std::cout << "\t### Socket open\n";
+
 }
 
 void GpgProc::pinLoop(std::string passwd) {
@@ -54,7 +54,7 @@ void GpgProc::pinLoop(std::string passwd) {
 
   while(true) {
     slen = sizeof(addr);
-    std::cout << "\t### Socket waiting..." << std::endl;
+
     client_sock = accept(_sockfd, (struct sockaddr*)&addr,
                          reinterpret_cast<socklen_t*>(&slen));
     
@@ -67,18 +67,18 @@ void GpgProc::pinLoop(std::string passwd) {
     rn = recv(client_sock, buf, bsize, 0);
     
     buf[rn] = '\0';
-    std::cout << "\t### Recv `" << buf << "` (" << rn << " bytes)\n";
+
 
     rbuf = std::string(buf);
     if(rbuf == "done") break;
     
     if(rbuf == "pin") {
       char *s = const_cast<char*>(passwd.c_str());
-      std::cout << "\t### Sending pin\n";
+
       auto wlen = send(client_sock, reinterpret_cast<void*>(s), 
                        passwd.length(),0);
       
-      std::cout << "\t### Sent " << wlen << " bytes\n";
+  
       
       
     }
@@ -87,7 +87,7 @@ void GpgProc::pinLoop(std::string passwd) {
   unlink(path.c_str());
   auto agent = _path+"/S.gpg-agent";
   unlink(agent.c_str());
-  std::cout << "\t### Socket closed\n\n";
+  
 }
 
 void GpgProc::closeSocket() {

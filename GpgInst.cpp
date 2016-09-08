@@ -28,7 +28,7 @@ GpgInst::~GpgInst() {
 std::string GpgInst::generateKey(std::string& passphrase, std::string& params) {
     GpgProc proc(_path);
 
-    auto cmd = "gpg2 --batch --gen-key "+params;
+    auto cmd = "gpg2 -q --batch --gen-key "+params;
     proc.run(cmd, passphrase);
     return exportPrivateKeys(passphrase);
 }
@@ -36,7 +36,7 @@ std::string GpgInst::generateKey(std::string& passphrase, std::string& params) {
 std::string GpgInst::exportPrivateKeys(std::string& passphrase) {
    GpgProc proc(_path);
 
-    auto cmd = "gpg2 --armor --export-secret-keys";
+    auto cmd = "gpg2 -q --armor --export-secret-keys";
     return proc.run(cmd, passphrase);
 }
 
@@ -60,7 +60,6 @@ PublicKey GpgInst::importPublicKey(std::string& armor) {
         
         return keyring[0];
     } catch(std::runtime_error &e) {
-        std::cerr << e.what() << "\n";
         return PublicKey();
     }
     
@@ -93,7 +92,6 @@ std::vector<PublicKey> GpgInst::exportPublicKeyring(gpgme_keylist_mode_t mode) {
        try {
             k.armor = exportPublicKeyArmor(k.name);
         } catch(std::runtime_error& e) { 
-            std::cerr << "Error: " << e.what() << "\n";
             k.armor = "ERROR";
         }
     }
@@ -149,7 +147,7 @@ std::string GpgInst::signCertificate(std::string& pub, std::string& pri, std::st
 
     GpgProc proc(_path);
 
-    auto cmd = "gpg2 --batch --yes --sign-key '"+name+"'";
+    auto cmd = "gpg2 -q --batch --yes --sign-key '"+name+"'";
     auto out = proc.run(cmd, passphrase);
     return exportPublicKeyArmor(name);
 }
@@ -160,7 +158,7 @@ void GpgInst::routineImportPrivateKey(std::string& pri, std::string& passphrase)
     std::ofstream f(keyfile);
     f.write(pri.c_str(), pri.length());
     f.close();
-    auto output = proc.run("gpg2 --batch --yes --import "+_path+"/key.apk", passphrase);
+    auto output = proc.run("gpg2 -q --batch --yes --import "+_path+"/key.apk", passphrase);
     unlink(keyfile.c_str());
 }
 

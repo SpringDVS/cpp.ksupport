@@ -60,18 +60,18 @@ std::string ProtocolHandler::run() {
 
 	switch(_msg.action()) {
 		case ProtocolMessage::Sign: {
-		        std::cout << "Action: SIGN\n";
+		        //=== std::cout << "Action: SIGN\n";
 			auto armor = inst.signCertificate(_msg.publicKey(),
 							   				  _msg.privateKey(),
 											  _msg.passphrase());
 			prepare(armor);
 			auto out = "\n{\n\"public\":\"" + armor + "\"\n}\n";
-			std::cout << "Response:\n" << out << "\n\n\n";
+			//=== std::cout << "Response:\n" << out << "\n\n\n";
 			return out;
 
 		}
 		case ProtocolMessage::keygen: {
-		        std::cout << "Action: KEYGEN\n";
+		        //=== std::cout << "Action: KEYGEN\n";
 			setupParams();
 			auto params = _home+"/params";
 			auto priarmor = inst.generateKey(_msg.passphrase(), params);
@@ -79,11 +79,11 @@ std::string ProtocolHandler::run() {
 			prepare(priarmor);
 			prepare(pubarmor);
 			auto out = "\n{\n\"private\":\"" + priarmor + "\",\n\"public\":\""+pubarmor+"\"\n}\n";
-			std::cout << "Response:\n" << out << "\n\n\n";
+			//=== std::cout << "Response:\n" << out << "\n\n\n";
 			return out;
 		}
 		case ProtocolMessage::Import: {
-		    std::cout << "Action: IMPORT\n";
+		    //=== std::cout << "Action: IMPORT\n";
 
 			if(!_msg.subjectKey().empty()) {
 				inst.importPublicKey(_msg.subjectKey());
@@ -107,7 +107,7 @@ std::string ProtocolHandler::run() {
 			out += "\"armor\":\"" + armor + "\"\n";
 			out += "}\n";
 
-			std::cout << "Response:\n" << out << "\n\n\n";
+			//=== std::cout << "Response:\n" << out << "\n\n\n";
 			return out;
 		}
 		default:
@@ -126,12 +126,12 @@ void ProtocolHandler::setupConf() {
 void ProtocolHandler::setupParams() {
 	std::string params = "\
 Key-Type: RSA\n\
-Key-Length: 1024\n\
+Key-Length: 2048\n\
 Subkey-Type: RSA\n\
-Subkey-Length: 1024\n\
+Subkey-Length: 2048\n\
 Name-Real: " + _msg.name() + "\n\
 Name-Email: " + _msg.email() + "\n\
-Expire-Date: 18m\n\
+Expire-Date: 24m\n\
 %commit";
 	std::ofstream f(_home+"/params");
     f.write(params.c_str(), params.length());
